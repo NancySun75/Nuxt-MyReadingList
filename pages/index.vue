@@ -45,8 +45,6 @@ function removeBook(index) {
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useBooks } from '~/composables/useBooks'
-const supabase = useSupabaseClient()
-console.log('supabase ok?', !!supabase)   // 应该是 true
 
 const { books, loading, error, fetchBooks } = useBooks()
 
