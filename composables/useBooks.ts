@@ -1,14 +1,9 @@
 // composables/useBooks.ts
 import { ref } from 'vue'
-import { createClient } from '@supabase/supabase-js'
+import { useNuxtApp } from '#app'
 
 export function useBooks() {
-  const config = useRuntimeConfig()
-
-  const supabaseUrl: string = config.public.supabaseUrl
-  const supabaseKey: string = config.public.supabaseKey
-
-  const supabase = createClient(supabaseUrl, supabaseKey)
+  const { $supabase } = useNuxtApp()
 
   const books = ref<any[]>([])
   const loading = ref(false)
@@ -16,7 +11,7 @@ export function useBooks() {
 
   const fetchBooks = async () => {
     loading.value = true
-    const { data, error: fetchError } = await supabase.from('books').select('*')
+    const { data, error: fetchError } = await $supabase.from('books').select('*')
     if (fetchError) {
       error.value = fetchError.message
     } else {

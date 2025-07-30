@@ -2,7 +2,8 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  //modules: ['@nuxtjs/supabase'],
+  modules: ['@nuxt/ui'],
+  plugins: ['@/plugins/supabase'],
   runtimeConfig: {
     public: {
       supabaseUrl: process.env.NUXT_SUPABASE_URL,

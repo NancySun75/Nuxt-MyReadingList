@@ -38,10 +38,10 @@ const books = [
     { id: 5, title: "Harry Potter", author: "J.K. Rowling" }
 ]
 
-const { $supabase } = useNuxtApp()
+const supabase = useNuxtApp().$supabase
 
 const { data: bookData, error } = await useAsyncData('books', async () => {
-  const { data, error } = await $supabase.from('books').select('id, title, author')
+  const { data, error } = await supabase.from('books').select('id, title, author')
   if (error) throw error
   return data
 })
