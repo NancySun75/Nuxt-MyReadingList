@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  modules: ['@nuxt/ui'],
+  modules: ['@nuxtjs/tailwindcss'],
   plugins: ['@/plugins/supabase'],
   runtimeConfig: {
     public: {
