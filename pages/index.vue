@@ -1,96 +1,97 @@
 <template>
-  <div class="flex items-center justify-between mb-6">
-    <h1 class="text-3xl font-bold text-gray-800 flex items-center gap-2">
-      📚 My Reading List
-    </h1>
+  <div class="space-y-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+      <h1 class="text-3xl font-bold text-gray-800 flex items-center gap-2">
+        📚 My Reading List
+      </h1>
 
-    <NuxtLink
-      to="/add"
-      class="inline-flex items-center gap-2 bg-blue-600 text-white px-3 py-2 rounded-lg shadow-sm hover:bg-blue-700 hover:shadow-md transition-all duration-200 text-sm"
-      custom
-      v-slot="{ navigate, href }"
-    >
-      <button :href="href" @click="navigate" type="button">
+      <UButton to="/add" icon="i-heroicons-plus" color="primary">
         Add Book
-      </button>
-    </NuxtLink>
-  </div>
+      </UButton>
+    </div>
 
-  <!-- Book list -->
-  <div class="bg-white rounded-lg shadow p-6 border border-gray-200">
-    <h2 class="text-xl font-semibold text-gray-700 mb-4">
-      Books ({{ books.length }})
-    </h2>
-
-    <div v-if="loading" class="text-gray-500">Loading...</div>
-    <div v-else-if="error" class="text-red-500">{{ error }}</div>
-
-    <ul v-else class="space-y-4">
-      <li
-        v-for="book in books"
-        :key="book.id"
-        class="flex justify-between items-start sm:items-center flex-col sm:flex-row gap-2 sm:gap-0"
-      >
-        <div>
-          <div class="font-semibold text-gray-800">
-            {{ book.title }} by {{ book.author }}
-          </div>
-          <label class="inline-flex items-center cursor-pointer">
-            <input type="checkbox" class="sr-only peer" :checked="book.is_read" @change="toggleReadStatus(book)" />
-            <div class="w-11 h-6 bg-gray-300 peer-checked:bg-green-500 rounded-full relative transition-colors">
-              <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-5"></div>
-            </div>
-            <span class="ml-2 text-sm text-gray-700">{{ book.is_read ? 'Read' : 'Unread' }}</span>
-          </label>
+    <!-- Book List Card -->
+    <UCard>
+      <template #header>
+        <div class="text-xl font-semibold">
+          Books ({{ books.length }})
         </div>
+      </template>
 
-        <button
-          class="text-red-600 hover:text-red-800 text-sm"
-          @click="deleteBook(book.id)"
+      <div v-if="loading" class="text-gray-500">Loading...</div>
+      <div v-else-if="error" class="text-red-500">{{ error }}</div>
+
+      <ul v-else class="space-y-4">
+        <li
+          v-for="book in books"
+          :key="book.id"
+          class="flex justify-between items-start sm:items-center flex-col sm:flex-row gap-2 sm:gap-0"
         >
-          Remove
-        </button>
-      </li>
-    </ul>
+          <!-- Book Info and Toggle -->
+          <div class="flex flex-col gap-1">
+            <div class="font-medium text-gray-800">
+              {{ book.title }} by {{ book.author }}
+            </div>
+
+            <div class="flex items-center gap-2">
+              <UToggle
+                v-model="book.is_read"
+                @update:model-value="() => toggleReadStatus(book)"
+                color="green"
+              />
+              <span class="text-sm text-gray-600">
+                {{ book.is_read ? 'Read' : 'Unread' }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Remove Button -->
+          <UButton color="error" variant="ghost" size="sm" @click="deleteBook(book.id)">
+            Remove
+          </UButton>
+        </li>
+      </ul>
+    </UCard>
   </div>
 </template>
 
-
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
- 
+
 const supabase = useNuxtApp().$supabase
 
 const books = ref<any[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
-const submitting = ref(false)
-
-const form = ref({
-  title: '',
-  author: ''
-})
 
 const fetchBooks = async () => {
   loading.value = true
-  const { data, error: fetchError } = await supabase.from('books').select('*').order('id', { ascending: false })
+  const { data, error: fetchError } = await supabase
+    .from('books')
+    .select('*')
+    .order('id', { ascending: false })
+
   if (fetchError) {
     error.value = fetchError.message
   } else {
     books.value = data || []
   }
+
   loading.value = false
 }
 
 const toggleReadStatus = async (book: any) => {
-  const newStatus = book.is_read ? 'Read' : 'Unread'
+  const newStatus = !book.is_read
 
   try {
-    await $fetch(`/api/books/${book.id}`, {
-      method: 'PATCH',
-      body: { status: newStatus }
-    })
-    await fetchBooks() 
+    await supabase
+      .from('books')
+      .update({ is_read: newStatus })
+      .eq('id', book.id)
+
+    // Update local value to avoid full re-fetch
+    book.is_read = newStatus
   } catch (error) {
     console.error('Failed to update status:', error)
   }
