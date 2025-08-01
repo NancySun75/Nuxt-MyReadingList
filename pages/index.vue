@@ -6,7 +6,7 @@
         📚 My Reading List
       </h1>
 
-      <UButton to="/add" icon="i-heroicons-plus" color="primary">
+      <UButton to="/add" color="primary">
         Add Book
       </UButton>
     </div>
