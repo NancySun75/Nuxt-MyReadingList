@@ -1,12 +1,12 @@
 <template>
-  <div class="p-8">
-    <div v-if="book">
-      <h1 class="text-2xl font-bold mb-2">{{ book.title }}</h1>
-      <p class="text-lg mb-1"><strong>Author:</strong> {{ book.author }}</p>
-      <p class="text-gray-600 text-sm"><strong>ID:</strong> {{ book.id }}</p>
-    </div>
-    <div v-else>Loading...</div>
+  <div v-if="pending">Loading...</div>
+  <div v-else-if="error">Error: {{ error.message }}</div>
+  <div v-else>
+    <h1>{{ book.title }}</h1>
+    <p>Author: {{ book.author }}</p>
+    <p>ID: {{ book.id }}</p>
   </div>
+
 </template>
 
 <script setup lang="ts">
@@ -19,19 +19,15 @@ interface Book {
 }
 
 const route = useRoute()
-const bookId = Number(route.params.id)
+const bookId = route.params.id as string
 
-const { data: book, error } = await useAsyncData<Book>('book', async () => {
-  try {
-    const res = await fetch(`/api/books/${bookId}`, { method: 'GET' })
-    const json = await res.json()
+const { data: book, error, pending } = await useFetch<Book>(`/api/books/${bookId}`, {
+  transform: (json: any) => {
     if (!json.success) {
       throw new Error(json.message || 'Failed to fetch book')
     }
-    
     return json.data as Book
-  } catch (err: any) {
-    throw err
   }
 })
+
 </script>

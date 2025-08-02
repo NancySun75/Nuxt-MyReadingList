@@ -1,6 +1,6 @@
 <template>
   <UContainer>
-    <UPageHeader title="Books" />
+    <!--<UPageHeader title="Books" />-->
 
     <div v-if="bookData && bookData.length">
       <UCard v-for="book in bookData" :key="book.id" class="mb-4">
@@ -30,21 +30,18 @@ interface Book {
   author: string
 }
 
-const { data: bookData, error } = await useAsyncData<Book[]>('books', async () => {
-  try {
-    const res = await fetch('/api/books', { method: 'GET' })
-    const json = await res.json()
+const { data: bookData, error } = await useFetch('/api/books', {
+  transform: (json: any) => {
     if (!json.success) {
       throw new Error(json.message || 'Failed to fetch books')
     }
-   
     return json.data.map((b: any) => ({
       id: b.id,
       title: b.title,
       author: b.author,
-    })) as Book[]
-  } catch (err: any) {
-    throw err
+    }))
   }
 })
+
+
 </script>
