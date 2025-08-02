@@ -1,21 +1,21 @@
-# 📚 My Reading List
+#  My Reading List
 
 A small full-stack web app built with **Nuxt 3** and **Nuxt UI**, designed to help users record and manage their reading list.  
 This project was created as a hands-on exercise to practice modern full-stack development with Nuxt and SQL.
 
 ---
 
-## ✨ Features
+##  Features
 
-- 📖 View all books with title, author, and reading status (Read / Unread)
-- ➕ Add new books to the reading list
-- 🔁 Toggle book reading status
-- 🗑️ Delete books from the list
-- 🧠 Full stack: Nuxt 3 + Server API routes + SQL database (Supabase)
+-  View all books with title, author, and reading status (Read / Unread)
+-  Add new books to the reading list
+-  Toggle book reading status
+-  Delete books from the list
+-  Full stack: Nuxt 3 + Server API routes + SQL database (Supabase)
 
 ---
 
-## 💻 Tech Stack
+##  Tech Stack
 
 | Layer       | Technology         |
 |-------------|--------------------|
@@ -27,7 +27,7 @@ This project was created as a hands-on exercise to practice modern full-stack de
 
 ---
 
-## 🚀 Getting Started (Development)
+##  Getting Started (Development)
 
 ### 1. Clone the repository
 
@@ -43,7 +43,7 @@ pnpm dev
 Go to http://localhost:3000 to view the app.
 
 
-## 🗃️ Database Setup
+##  Database Setup
 
 This project uses Supabase as a backend SQL database (PostgreSQL).
 
@@ -53,7 +53,7 @@ API routes use server/utils/supabaseClient.ts to read/write data
 
 You can modify or extend the database schema directly in your Supabase project dashboard.
 
-## 📁 Project Structure
+##  Project Structure
 
 pages/           # UI pages: index, books list, add book
 components/      # Reusable UI: NavBar, Footer
@@ -61,7 +61,7 @@ layouts/         # Default layout with shared UI
 server/api/      # Nuxt Server Routes for CRUD
 plugins/         # Supabase plugin
 
-## 📦 Production Build (optional)
+##  Production Build (optional)
 
 To build and preview production output locally:
 pnpm build
