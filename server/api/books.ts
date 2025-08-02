@@ -1,11 +1,30 @@
 // server/api/books.ts
-import { readBody, getMethod } from 'h3'
+import { readBody, getQuery, getMethod } from 'h3'
 import supabase from '~/server/utils/supabaseClient'
 
 export default defineEventHandler(async (event) => {
   const method = getMethod(event)
 
+  // 支持 GET 查询参数 title, author 来查重
   if (method === 'GET') {
+    const query = getQuery(event)
+
+    if (query.title && query.author) {
+      const { data, error } = await supabase
+        .from('books')
+        .select('*')
+        .eq('title', query.title)
+        .eq('author', query.author)
+        .maybeSingle()
+
+      if (error) {
+        return { success: false, message: error.message }
+      }
+
+      return { success: true, data }
+    }
+
+    // 默认获取全部
     const { data, error } = await supabase.from('books').select('*')
     if (error) {
       return { success: false, message: error.message }

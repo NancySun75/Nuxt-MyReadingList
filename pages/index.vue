@@ -31,7 +31,7 @@
           <!-- Book Info and Toggle -->
           <div class="flex flex-col gap-1">
             <div class="font-medium text-gray-800">
-              {{ book.title }} by {{ book.author }}
+              {{ book.books.title }} by {{ book.books.author }}
             </div>
 
             <div class="flex items-center gap-2">
@@ -68,7 +68,7 @@ const fetchBooks = async () => {
   loading.value = true
   error.value = null
   try {
-    const res = await fetch('/api/books', {
+    const res = await fetch('/api/my-books', {
       method: 'GET',
     })
     const json = await res.json()
@@ -88,7 +88,7 @@ const fetchBooks = async () => {
 const switchReadStatus = async (book: any) => {
   const newStatus = !book.is_read
   try {
-    const res = await fetch(`/api/books/${book.id}`, {
+    const res = await fetch(`/api/my-books/${book.id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -108,7 +108,7 @@ const switchReadStatus = async (book: any) => {
 
 const deleteBook = async (id: number) => {
   try {
-    const res = await fetch(`/api/books/${id}`, {
+    const res = await fetch(`/api/my-books/${id}`, {
       method: 'DELETE',
     })
     const json = await res.json()
