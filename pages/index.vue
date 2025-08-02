@@ -35,10 +35,10 @@
             </div>
 
             <div class="flex items-center gap-2">
-              <UToggle
-                v-model="book.is_read"
-                @update:model-value="() => toggleReadStatus(book)"
-                color="green"
+              <USwitch
+                :checked="book.is_read"
+                :color="book.is_read ? 'success' : 'neutral'"
+                @change="switchReadStatus(book)"
               />
               <span class="text-sm text-gray-600">
                 {{ book.is_read ? 'Read' : 'Unread' }}
@@ -57,6 +57,7 @@
 </template>
 
 <script setup lang="ts">
+import { USwitch } from '#components'
 import { ref, onMounted } from 'vue'
 
 const supabase = useNuxtApp().$supabase
@@ -81,7 +82,7 @@ const fetchBooks = async () => {
   loading.value = false
 }
 
-const toggleReadStatus = async (book: any) => {
+const switchReadStatus = async (book: any) => {
   const newStatus = !book.is_read
 
   try {

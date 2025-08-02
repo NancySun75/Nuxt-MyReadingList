@@ -4,12 +4,6 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ['@nuxt/ui'],
   css: ['@/assets/CSS/app.css'],
-  postcss: {
-    plugins: {
-      tailwindcss: {},
-      autoprefixer: {},
-    },
-  },
   plugins: ['@/plugins/supabase'],
   runtimeConfig: {
     public: {
