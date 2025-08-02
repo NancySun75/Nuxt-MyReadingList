@@ -1,16 +1,16 @@
-import { createClient } from '@supabase/supabase-js'
-import { defineEventHandler, readBody, getMethod } from 'h3'
+// server/api/books.ts
+import { readBody, getMethod } from 'h3'
+import supabase from '~/server/utils/supabaseClient'
 
 export default defineEventHandler(async (event) => {
-  const config = useRuntimeConfig()
-  const supabase = createClient(config.public.supabaseUrl, config.public.supabaseKey)
-
   const method = getMethod(event)
 
   if (method === 'GET') {
     const { data, error } = await supabase.from('books').select('*')
-    if (error) return { error: error.message }
-    return { data }
+    if (error) {
+      return { success: false, message: error.message }
+    }
+    return { success: true, data }
   }
 
   if (method === 'POST') {
@@ -18,17 +18,27 @@ export default defineEventHandler(async (event) => {
     const { title, author, is_read } = body
 
     if (!title || !author) {
-      return { error: 'title and author are required' }
+      return {
+        success: false,
+        message: '"title" and "author" are required',
+      }
     }
 
-    const { data, error } = await supabase.from('books').insert([
-      { title, author, is_read: is_read ?? false }
-    ]).select()
+    const { data, error } = await supabase
+      .from('books')
+      .insert([{ title, author, is_read: is_read ?? false }])
+      .select()
 
-    if (error) return { error: error.message }
+    if (error) {
+      return { success: false, message: error.message }
+    }
 
-    return { data: data[0] }
+    return { success: true, data: data[0] }
   }
 
-  return { error: `Method ${method} not allowed` }
+  return {
+    statusCode: 405,
+    success: false,
+    message: `Method ${method} not allowed`,
+  }
 })

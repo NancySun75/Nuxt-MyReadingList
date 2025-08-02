@@ -18,7 +18,7 @@
     </UAlert>
 
     <UAlert v-if="error" color="error" variant="solid" class="mt-4">
-      Error: {{ error.message }}
+      Error: {{ error.message || error }}
     </UAlert>
   </UContainer>
 </template>
@@ -30,12 +30,21 @@ interface Book {
   author: string
 }
 
-const supabase = useNuxtApp().$supabase
-
 const { data: bookData, error } = await useAsyncData<Book[]>('books', async () => {
-  const { data, error } = await supabase.from('books').select('id, title, author')
-  if (error) throw error
-  return data!
-}
-)
+  try {
+    const res = await fetch('/api/books', { method: 'GET' })
+    const json = await res.json()
+    if (!json.success) {
+      throw new Error(json.message || 'Failed to fetch books')
+    }
+    // 注意你的后端接口 data 里面可能会有更多字段，这里取id,title,author即可
+    return json.data.map((b: any) => ({
+      id: b.id,
+      title: b.title,
+      author: b.author,
+    })) as Book[]
+  } catch (err: any) {
+    throw err
+  }
+})
 </script>

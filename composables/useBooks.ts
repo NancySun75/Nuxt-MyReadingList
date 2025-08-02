@@ -1,29 +1,35 @@
-
 import { ref } from 'vue'
-import { useNuxtApp } from '#app'
 
 export function useBooks() {
-  const { $supabase } = useNuxtApp()
-
   const books = ref<any[]>([])
   const loading = ref(false)
   const error = ref<string | null>(null)
 
   const fetchBooks = async () => {
     loading.value = true
-    const { data, error: fetchError } = await $supabase.from('books').select('*')
-    if (fetchError) {
-      error.value = fetchError.message
-    } else {
-      books.value = data || []
+    error.value = null
+    try {
+      const res = await fetch('/api/books', { method: 'GET' })
+      const json = await res.json()
+
+      if (!json.success) {
+        error.value = json.message || 'Failed to fetch books'
+        books.value = []
+      } else {
+        books.value = json.data || []
+      }
+    } catch (err: any) {
+      error.value = err.message || 'Network error'
+      books.value = []
+    } finally {
+      loading.value = false
     }
-    loading.value = false
   }
 
   return {
     books,
     loading,
     error,
-    fetchBooks
+    fetchBooks,
   }
 }

@@ -24,7 +24,6 @@
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
 
-const supabase = useNuxtApp().$supabase
 const router = useRouter()
 
 const form = reactive({
@@ -58,11 +57,23 @@ const validate = () => {
 const handleSubmit = async () => {
   if (!validate()) return
 
-  const { error } = await supabase.from('books').insert([form])
-  if (!error) {
+  try {
+    const res = await fetch('/api/books', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(form),
+    })
+    const json = await res.json()
+
+    if (!json.success) {
+      alert('Failed to add book: ' + (json.message || 'Unknown error'))
+      return
+    }
     router.push('/')
-  } else {
-    alert('Failed to add book: ' + error.message)
+  } catch (err: any) {
+    alert('Failed to add book: ' + (err.message || 'Network error'))
   }
 }
 </script>

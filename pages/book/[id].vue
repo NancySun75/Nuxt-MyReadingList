@@ -10,6 +10,8 @@
 </template>
 
 <script setup lang="ts">
+import { useRoute } from 'vue-router'
+
 interface Book {
   id: number
   title: string
@@ -19,11 +21,17 @@ interface Book {
 const route = useRoute()
 const bookId = Number(route.params.id)
 
-const supabase = useNuxtApp().$supabase
-
 const { data: book, error } = await useAsyncData<Book>('book', async () => {
-  const { data, error } = await supabase.from('books').select('id, title, author').eq('id', bookId).single()
-  if (error) throw error
-  return data!
+  try {
+    const res = await fetch(`/api/books/${bookId}`, { method: 'GET' })
+    const json = await res.json()
+    if (!json.success) {
+      throw new Error(json.message || 'Failed to fetch book')
+    }
+    
+    return json.data as Book
+  } catch (err: any) {
+    throw err
+  }
 })
 </script>

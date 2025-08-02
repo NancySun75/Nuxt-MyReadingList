@@ -60,50 +60,65 @@
 import { USwitch } from '#components'
 import { ref, onMounted } from 'vue'
 
-const supabase = useNuxtApp().$supabase
-
 const books = ref<any[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
 
 const fetchBooks = async () => {
   loading.value = true
-  const { data, error: fetchError } = await supabase
-    .from('books')
-    .select('*')
-    .order('id', { ascending: false })
-
-  if (fetchError) {
-    error.value = fetchError.message
-  } else {
-    books.value = data || []
+  error.value = null
+  try {
+    const res = await fetch('/api/books', {
+      method: 'GET',
+    })
+    const json = await res.json()
+    if (!json.success) {
+      error.value = json.message || 'Failed to fetch books'
+      books.value = []
+    } else {
+      books.value = json.data || []
+    }
+  } catch (err: any) {
+    error.value = err.message || 'Network error'
+    books.value = []
   }
-
   loading.value = false
 }
 
 const switchReadStatus = async (book: any) => {
   const newStatus = !book.is_read
-
   try {
-    await supabase
-      .from('books')
-      .update({ is_read: newStatus })
-      .eq('id', book.id)
-
-    // Update local value to avoid full re-fetch
-    book.is_read = newStatus
-  } catch (error) {
-    console.error('Failed to update status:', error)
+    const res = await fetch(`/api/books/${book.id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ is_read: newStatus }),
+    })
+    const json = await res.json()
+    if (!json.success) {
+      console.error('Failed to update status:', json.message)
+    } else {
+      book.is_read = newStatus
+    }
+  } catch (err) {
+    console.error('Failed to update status:', err)
   }
 }
 
 const deleteBook = async (id: number) => {
-  const { error: deleteError } = await supabase.from('books').delete().eq('id', id)
-  if (deleteError) {
-    alert(deleteError.message)
-  } else {
-    await fetchBooks()
+  try {
+    const res = await fetch(`/api/books/${id}`, {
+      method: 'DELETE',
+    })
+    const json = await res.json()
+    if (!json.success) {
+      alert(json.message || 'Failed to delete book')
+    } else {
+      await fetchBooks()
+    }
+  } catch (err: any) {
+    alert(err.message || 'Network error')
   }
 }
 
