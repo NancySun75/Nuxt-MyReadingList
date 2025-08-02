@@ -1,4 +1,3 @@
-// server/api/books/[id].ts
 import { readBody, getRouterParam } from 'h3'
 import supabase from '~/server/utils/supabaseClient'
 

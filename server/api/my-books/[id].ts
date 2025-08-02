@@ -1,4 +1,3 @@
-// server/api/my-books/[id].ts
 import supabase from '~/server/utils/supabaseClient'
 import { H3Event, readBody } from 'h3'
 
@@ -10,7 +9,6 @@ export default defineEventHandler(async (event: H3Event) => {
     return { success: false, message: 'Missing ID in URL' }
   }
 
-  // PATCH: 更新 is_read 状态
   if (method === 'PATCH') {
     const body = await readBody(event)
     const { is_read } = body
@@ -29,7 +27,6 @@ export default defineEventHandler(async (event: H3Event) => {
     return { success: true, data }
   }
 
-  // DELETE: 删除记录
   if (method === 'DELETE') {
     const { error } = await supabase
       .from('user_books')

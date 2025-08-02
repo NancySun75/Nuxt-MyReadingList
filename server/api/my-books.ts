@@ -5,7 +5,6 @@ import { H3Event, readBody } from 'h3'
 export default defineEventHandler(async (event: H3Event) => {
   const method = event.method
 
-  // GET: 获取所有 user_books 数据（含 book 的 title 和 author）
   if (method === 'GET') {
     const { data, error } = await supabase
       .from('user_books')

@@ -25,22 +25,20 @@ import { UForm, UFormField, UInput, UButton } from '#components'
 
 const router = useRouter()
 
-// state 必须是响应式的，且结构和表单字段对应
+
 const state = reactive({
   title: '',
   author: '',
 })
 
-// 这里存储验证错误，给 UFormField 展示
+
 const errors = reactive<{ name: string; message: string }[]>([])
 
-// 根据字段名获取对应错误消息，方便给 <UFormField :error="..." />
 const getError = (fieldName: string) => {
   const err = errors.find(e => e.name === fieldName)
   return err ? err.message : ''
 }
 
-// validate 函数需要返回错误数组
 const validate = (currentState: typeof state) => {
   const errs: { name: string; message: string }[] = []
 
@@ -51,7 +49,7 @@ const validate = (currentState: typeof state) => {
     errs.push({ name: 'author', message: 'Author is required' })
   }
 
-  // 更新全局错误状态
+ 
   errors.splice(0, errors.length, ...errs)
 
   return errs

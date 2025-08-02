@@ -5,7 +5,7 @@ import supabase from '~/server/utils/supabaseClient'
 export default defineEventHandler(async (event) => {
   const method = getMethod(event)
 
-  // 支持 GET 查询参数 title, author 来查重
+  
   if (method === 'GET') {
     const query = getQuery(event)
 
@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
       return { success: true, data }
     }
 
-    // 默认获取全部
+   
     const { data, error } = await supabase.from('books').select('*')
     if (error) {
       return { success: false, message: error.message }
